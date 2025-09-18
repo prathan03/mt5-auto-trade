@@ -38,7 +38,7 @@ logger = logging.getLogger(__name__)
 
 class TelegramNotifier:
     """Telegram Notification System"""
-    
+
     def __init__(self, bot_token: str, chat_id: str):
         """
         Initialize Telegram Bot
@@ -49,18 +49,39 @@ class TelegramNotifier:
         self.chat_id = chat_id
         self.bot = Bot(token=bot_token)
         self.enabled = bool(bot_token and chat_id)
-        
+        self.loop = None  # Will create event loop when needed
+
         if self.enabled:
             # Test connection
             try:
-                asyncio.run(self._test_connection())
+                self._run_async(self._test_connection())
                 logger.info("Telegram notifier initialized successfully")
             except Exception as e:
                 logger.error(f"Failed to initialize Telegram notifier: {e}")
                 self.enabled = False
         else:
             logger.info("Telegram notifier disabled (no token/chat_id)")
-    
+
+    def _run_async(self, coro):
+        """Run async coroutine safely"""
+        try:
+            # Try to get existing event loop
+            try:
+                loop = asyncio.get_running_loop()
+                # If we're in an async context, create a task
+                return asyncio.create_task(coro)
+            except RuntimeError:
+                # No running loop, create new one
+                loop = asyncio.new_event_loop()
+                asyncio.set_event_loop(loop)
+                try:
+                    return loop.run_until_complete(coro)
+                finally:
+                    loop.close()
+        except Exception as e:
+            logger.error(f"Async execution error: {e}")
+            raise
+
     async def _test_connection(self):
         """Test Telegram connection"""
         await self.bot.send_message(
@@ -70,17 +91,17 @@ class TelegramNotifier:
                  f"Time: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}\n"
                  "Status: Connected ✅"
         )
-    
+
     def send_message(self, message: str, parse_mode: str = 'HTML'):
         """Send message to Telegram"""
         if not self.enabled:
             return
-        
+
         try:
-            asyncio.run(self._send_async(message, parse_mode))
+            self._run_async(self._send_async(message, parse_mode))
         except Exception as e:
             logger.error(f"Failed to send Telegram message: {e}")
-    
+
     async def _send_async(self, message: str, parse_mode: str):
         """Async send message"""
         await self.bot.send_message(
