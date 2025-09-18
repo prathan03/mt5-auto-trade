@@ -2251,7 +2251,7 @@ if __name__ == "__main__":
         
         # Trading Settings
         'check_interval': 300,  # ตรวจสอบทุก 5 นาที
-        'use_news_filter': True,  # หลีกเลี่ยงช่วงข่าว high impact
+        'use_news_filter': False,  # หลีกเลี่ยงช่วงข่าว high impact
         'max_spread_multiplier': 2.0,  # ไม่เทรดถ้า spread > ปกติ x 2
         
         # Trading Sessions (Bangkok Time GMT+7)
@@ -2259,7 +2259,7 @@ if __name__ == "__main__":
             'ASIAN': {'start': 7, 'end': 16, 'volatility_factor': 0.7},
             'EUROPEAN': {'start': 14, 'end': 23, 'volatility_factor': 1.0},
             'US': {'start': 20, 'end': 5, 'volatility_factor': 1.2},
-            'enabled': True  # เปิด/ปิด การกรอง session
+            'enabled': False  # เปิด/ปิด การกรอง session
         }
     }
     
