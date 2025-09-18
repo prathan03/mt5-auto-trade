@@ -604,36 +604,67 @@ Avoid new trades 30min before and after
         return pd.DataFrame()
 
 class MT5Connection:
-    """MT5 Connection Manager"""
+    """MT5 Connection Manager - Supports both login and no-login modes"""
 
-    def __init__(self, login: int, password: str, server: str):
+    def __init__(self, login: Optional[int] = None, password: Optional[str] = None, server: Optional[str] = None):
         self.login = login
         self.password = password
         self.server = server
         self.connected = False
-        
+        self.use_existing_terminal = (login is None or password is None or server is None)
+
     def connect(self) -> bool:
-        """เชื่อมต่อกับ MT5"""
-        if not mt5.initialize():
-            logger.error(f"MT5 initialize failed: {mt5.last_error()}")
-            return False
-            
-        # Login to MT5
-        authorized = mt5.login(
-            login=self.login,
-            password=self.password,
-            server=self.server
-        )
-        
-        if authorized:
-            self.connected = True
+        """เชื่อมต่อกับ MT5 - รองรับทั้งแบบ login และไม่ login"""
+
+        # Mode 1: Use existing MT5 terminal (no login required)
+        if self.use_existing_terminal:
+            logger.info("Connecting to existing MT5 terminal session...")
+
+            # Try to initialize without login
+            if not mt5.initialize():
+                logger.error(f"MT5 initialize failed: {mt5.last_error()}")
+                logger.info("Please ensure MT5 terminal is running and logged in")
+                return False
+
+            # Check if already logged in
             account_info = mt5.account_info()
-            logger.info(f"Connected to MT5 - Account: {account_info.login}, Balance: {account_info.balance}")
+            if account_info is None:
+                logger.error("MT5 is not logged in. Please login to MT5 terminal first")
+                mt5.shutdown()
+                return False
+
+            # Successfully connected to existing session
+            self.connected = True
+            logger.info(f"✅ Connected to existing MT5 session")
+            logger.info(f"Account: {account_info.login}, Server: {account_info.server}")
+            logger.info(f"Balance: ${account_info.balance:.2f}, Equity: ${account_info.equity:.2f}")
             return True
+
+        # Mode 2: Login with credentials
         else:
-            logger.error(f"Failed to connect: {mt5.last_error()}")
-            return False
-    
+            logger.info("Connecting to MT5 with login credentials...")
+
+            if not mt5.initialize():
+                logger.error(f"MT5 initialize failed: {mt5.last_error()}")
+                return False
+
+            # Login to MT5
+            authorized = mt5.login(
+                login=self.login,
+                password=self.password,
+                server=self.server
+            )
+
+            if authorized:
+                self.connected = True
+                account_info = mt5.account_info()
+                logger.info(f"✅ Connected to MT5 with credentials")
+                logger.info(f"Account: {account_info.login}, Balance: ${account_info.balance:.2f}")
+                return True
+            else:
+                logger.error(f"Failed to connect: {mt5.last_error()}")
+                return False
+
     def disconnect(self):
         """ตัดการเชื่อมต่อ MT5"""
         mt5.shutdown()
@@ -1702,10 +1733,10 @@ class MT5TradingExecutor:
 class TradingBot:
     """Main Trading Bot Controller"""
 
-    def __init__(self, mt5_login: int, mt5_password: str, mt5_server: str,
-                 gemini_api_key: str, telegram_token: str = None,
-                 telegram_chat_id: str = None, config: Dict = None):
-        # Initialize components
+    def __init__(self, mt5_login: Optional[int] = None, mt5_password: Optional[str] = None,
+                 mt5_server: Optional[str] = None, gemini_api_key: str = None,
+                 telegram_token: str = None, telegram_chat_id: str = None, config: Dict = None):
+        # Initialize components - Support no-login mode
         self.mt5_conn = MT5Connection(mt5_login, mt5_password, mt5_server)
         self.market_data = MarketDataMT5()
         
@@ -2118,23 +2149,28 @@ class TradingBot:
 
 # Main execution
 if __name__ == "__main__":
-    # Basic Configuration - ใส่ข้อมูลของคุณที่นี่
-    MT5_LOGIN = 12345678  # Your MT5 account number
-    MT5_PASSWORD = "your_password"  # Your MT5 password
-    MT5_SERVER = "YourBroker-Demo"  # Your broker's MT5 server
-    GEMINI_API_KEY = "your_gemini_api_key"  # Your Gemini API key
-    
+    # Mode 1: Use existing MT5 terminal (ไม่ต้องใส่ login/password)
+    # เพียงแค่เปิด MT5 และ login ไว้แล้ว
+    USE_EXISTING_MT5 = True  # Set to True to use existing MT5 session
+
+    if USE_EXISTING_MT5:
+        # ไม่ต้องใส่ข้อมูล login - ใช้ MT5 ที่เปิดอยู่แล้ว
+        MT5_LOGIN = None
+        MT5_PASSWORD = None
+        MT5_SERVER = None
+        logger.info("Using existing MT5 terminal session (no login required)")
+    else:
+        # Mode 2: Login with credentials
+        MT5_LOGIN = int(os.getenv('MT5_LOGIN', 12345678))  # Your MT5 account number
+        MT5_PASSWORD = os.getenv('MT5_PASSWORD', 'your_password')  # Your MT5 password
+        MT5_SERVER = os.getenv('MT5_SERVER', 'YourBroker-Demo')  # Your broker's MT5 server
+
+    # Gemini API Configuration (required)
+    GEMINI_API_KEY = os.getenv('GEMINI_API_KEY', 'your_gemini_api_key')  # Your Gemini API key
+
     # Telegram Configuration (Optional)
-    TELEGRAM_BOT_TOKEN = "your_bot_token"  # Token from @BotFather
-    TELEGRAM_CHAT_ID = "your_chat_id"  # Your Telegram chat ID
-    
-    # หรือโหลดจาก environment variables (แนะนำ)
-    # MT5_LOGIN = int(os.getenv('MT5_LOGIN'))
-    # MT5_PASSWORD = os.getenv('MT5_PASSWORD')
-    # MT5_SERVER = os.getenv('MT5_SERVER')
-    # GEMINI_API_KEY = os.getenv('GEMINI_API_KEY')
-    # TELEGRAM_BOT_TOKEN = os.getenv('TELEGRAM_BOT_TOKEN')
-    # TELEGRAM_CHAT_ID = os.getenv('TELEGRAM_CHAT_ID')
+    TELEGRAM_BOT_TOKEN = os.getenv('TELEGRAM_BOT_TOKEN', None)  # Token from @BotFather
+    TELEGRAM_CHAT_ID = os.getenv('TELEGRAM_CHAT_ID', None)  # Your Telegram chat ID
     
     # Advanced Configuration
     custom_config = {
