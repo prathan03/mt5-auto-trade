@@ -75,6 +75,21 @@ cp .env.example .env
 
 ## Configuration 🔧
 
+### NEW: No-Login Mode (Recommended) 🔐
+You can now use the bot without putting credentials in the code! Just use your existing MT5 terminal session:
+
+1. **Open MT5 and login manually**
+2. **Enable Auto Trading** in MT5
+3. **Set USE_EXISTING_MT5 = True** in main.py
+4. **Run the bot** - it will use your existing MT5 session
+
+```python
+# In main.py
+USE_EXISTING_MT5 = True  # No login/password needed!
+```
+
+### Traditional Login Mode
+
 ### Getting Gemini API Key
 1. Visit https://makersuite.google.com/app/apikey
 2. Create a new API key

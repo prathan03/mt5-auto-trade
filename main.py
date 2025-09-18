@@ -1756,39 +1756,39 @@ class TradingBot:
         default_config = {
             'symbols': {
                 # Major Forex Pairs
-                'EURUSD': {'enabled': True, 'max_spread': 20},
-                'GBPUSD': {'enabled': True, 'max_spread': 30},
-                'USDJPY': {'enabled': True, 'max_spread': 20},
-                'USDCHF': {'enabled': True, 'max_spread': 25},
-                'USDCAD': {'enabled': True, 'max_spread': 25},
-                'AUDUSD': {'enabled': True, 'max_spread': 25},
-                'NZDUSD': {'enabled': True, 'max_spread': 30},
+                'EURUSDc': {'enabled': True, 'max_spread': 20},
+                # 'GBPUSD': {'enabled': True, 'max_spread': 30},
+                # 'USDJPY': {'enabled': True, 'max_spread': 20},
+                # 'USDCHF': {'enabled': True, 'max_spread': 25},
+                # 'USDCAD': {'enabled': True, 'max_spread': 25},
+                # 'AUDUSD': {'enabled': True, 'max_spread': 25},
+                # 'NZDUSD': {'enabled': True, 'max_spread': 30},
                 
-                # Cross Pairs
-                'EURGBP': {'enabled': True, 'max_spread': 30},
-                'EURJPY': {'enabled': True, 'max_spread': 30},
-                'GBPJPY': {'enabled': True, 'max_spread': 40},
-                'AUDJPY': {'enabled': True, 'max_spread': 35},
-                'EURCHF': {'enabled': False, 'max_spread': 30},
+                # # Cross Pairs
+                # 'EURGBP': {'enabled': True, 'max_spread': 30},
+                # 'EURJPY': {'enabled': True, 'max_spread': 30},
+                # 'GBPJPY': {'enabled': True, 'max_spread': 40},
+                # 'AUDJPY': {'enabled': True, 'max_spread': 35},
+                # 'EURCHF': {'enabled': False, 'max_spread': 30},
                 
-                # Commodities
-                'XAUUSD': {'enabled': True, 'max_spread': 50},  # Gold
-                'XAUEUR': {'enabled': False, 'max_spread': 60},  # Gold in EUR
-                'XAGUSD': {'enabled': True, 'max_spread': 50},  # Silver
-                'USOIL': {'enabled': True, 'max_spread': 50},   # WTI Oil
-                'UKOIL': {'enabled': False, 'max_spread': 50},   # Brent Oil
+                # # Commodities
+                'XAUUSDc': {'enabled': True, 'max_spread': 50},  # Gold
+                # 'XAUEUR': {'enabled': False, 'max_spread': 60},  # Gold in EUR
+                # 'XAGUSD': {'enabled': True, 'max_spread': 50},  # Silver
+                # 'USOIL': {'enabled': True, 'max_spread': 50},   # WTI Oil
+                # 'UKOIL': {'enabled': False, 'max_spread': 50},   # Brent Oil
                 
-                # Indices (if your broker supports)
-                'US30': {'enabled': False, 'max_spread': 50},    # Dow Jones
-                'US500': {'enabled': False, 'max_spread': 30},   # S&P 500
-                'NAS100': {'enabled': False, 'max_spread': 40},  # Nasdaq
-                'DE30': {'enabled': False, 'max_spread': 40},    # DAX
-                'UK100': {'enabled': False, 'max_spread': 40},   # FTSE
-                'JP225': {'enabled': False, 'max_spread': 50},   # Nikkei
+                # # Indices (if your broker supports)
+                # 'US30': {'enabled': False, 'max_spread': 50},    # Dow Jones
+                # 'US500': {'enabled': False, 'max_spread': 30},   # S&P 500
+                # 'NAS100': {'enabled': False, 'max_spread': 40},  # Nasdaq
+                # 'DE30': {'enabled': False, 'max_spread': 40},    # DAX
+                # 'UK100': {'enabled': False, 'max_spread': 40},   # FTSE
+                # 'JP225': {'enabled': False, 'max_spread': 50},   # Nikkei
                 
-                # Crypto (if your broker supports)
-                'BTCUSD': {'enabled': False, 'max_spread': 100},
-                'ETHUSD': {'enabled': False, 'max_spread': 80}
+                # # Crypto (if your broker supports)
+                # 'BTCUSD': {'enabled': False, 'max_spread': 100},
+                # 'ETHUSD': {'enabled': False, 'max_spread': 80}
             },
             'check_interval': 300,  # 5 minutes
             'use_news_filter': True,  # Avoid trading during high-impact news
@@ -2177,26 +2177,26 @@ if __name__ == "__main__":
         # เลือก symbols ที่ต้องการเทรด (ตั้ง enabled: True/False)
         'symbols': {
             # Major Forex - เปิดใช้งาน
-            'EURUSD': {'enabled': True, 'max_spread': 20},
-            'GBPUSD': {'enabled': True, 'max_spread': 30},
-            'USDJPY': {'enabled': True, 'max_spread': 20},
-            'AUDUSD': {'enabled': True, 'max_spread': 25},
+            'EURUSDc': {'enabled': True, 'max_spread': 20},
+            # 'GBPUSD': {'enabled': True, 'max_spread': 30},
+            # 'USDJPY': {'enabled': True, 'max_spread': 20},
+            # 'AUDUSD': {'enabled': True, 'max_spread': 25},
             
-            # Commodities - เปิดใช้งาน
-            'XAUUSD': {'enabled': True, 'max_spread': 50},  # ทองคำ
-            'XAGUSD': {'enabled': True, 'max_spread': 50},  # เงิน
-            'USOIL': {'enabled': True, 'max_spread': 50},   # น้ำมัน
+            # # Commodities - เปิดใช้งาน
+            'XAUUSDc': {'enabled': True, 'max_spread': 50},  # ทองคำ
+            # 'XAGUSD': {'enabled': True, 'max_spread': 50},  # เงิน
+            # 'USOIL': {'enabled': True, 'max_spread': 50},   # น้ำมัน
             
-            # Cross pairs - เปิดบางคู่
-            'EURJPY': {'enabled': True, 'max_spread': 30},
-            'GBPJPY': {'enabled': True, 'max_spread': 40},
+            # # Cross pairs - เปิดบางคู่
+            # 'EURJPY': {'enabled': True, 'max_spread': 30},
+            # 'GBPJPY': {'enabled': True, 'max_spread': 40},
             
-            # Indices - ปิดไว้ก่อน (เปิดได้ถ้า broker รองรับ)
-            'US30': {'enabled': False, 'max_spread': 50},
-            'NAS100': {'enabled': False, 'max_spread': 40},
+            # # Indices - ปิดไว้ก่อน (เปิดได้ถ้า broker รองรับ)
+            # 'US30': {'enabled': False, 'max_spread': 50},
+            # 'NAS100': {'enabled': False, 'max_spread': 40},
             
-            # Crypto - ปิดไว้ก่อน (เปิดได้ถ้า broker รองรับ)
-            'BTCUSD': {'enabled': False, 'max_spread': 100},
+            # # Crypto - ปิดไว้ก่อน (เปิดได้ถ้า broker รองรับ)
+            # 'BTCUSD': {'enabled': False, 'max_spread': 100},
         },
         
         # Risk Parameters (Conservative Settings)
