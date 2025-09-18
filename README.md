@@ -27,8 +27,8 @@ An advanced automated trading system for MetaTrader 5 that uses Google's Gemini 
 
 ### 1. Clone the repository
 ```bash
-git clone https://github.com/yourusername/mt5-trading-bot.git
-cd mt5-trading-bot
+git clone https://github.com/prathan03/mt5-auto-trade.git
+cd mt5-auto-trade
 ```
 
 ### 2. Create virtual environment
@@ -253,4 +253,4 @@ MIT License - see LICENSE file for details
 
 ---
 
-Made with ❤️ by [Your Name]
+Made with ❤️ by THAN
