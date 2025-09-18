@@ -675,7 +675,7 @@ class MarketDataMT5:
     """ดึงและวิเคราะห์ข้อมูลตลาดจาก MT5 with caching"""
 
     def __init__(self):
-        self.symbols = ['EURUSD', 'XAUUSD']
+        self.symbols = ['EURUSDc', 'XAUUSDc']  # Broker symbols with 'c' suffix
         # Performance cache
         self._cache = {}
         self._cache_duration = 60  # Cache for 60 seconds
@@ -1756,7 +1756,7 @@ class TradingBot:
         default_config = {
             'symbols': {
                 # Major Forex Pairs
-                'EURUSDc': {'enabled': True, 'max_spread': 20},
+                'EURUSDc': {'enabled': True, 'max_spread': 20},  # Broker symbol
                 # 'GBPUSD': {'enabled': True, 'max_spread': 30},
                 # 'USDJPY': {'enabled': True, 'max_spread': 20},
                 # 'USDCHF': {'enabled': True, 'max_spread': 25},
@@ -1772,7 +1772,7 @@ class TradingBot:
                 # 'EURCHF': {'enabled': False, 'max_spread': 30},
                 
                 # # Commodities
-                'XAUUSDc': {'enabled': True, 'max_spread': 50},  # Gold
+                'XAUUSDc': {'enabled': True, 'max_spread': 50},  # Gold - Broker symbol
                 # 'XAUEUR': {'enabled': False, 'max_spread': 60},  # Gold in EUR
                 # 'XAGUSD': {'enabled': True, 'max_spread': 50},  # Silver
                 # 'USOIL': {'enabled': True, 'max_spread': 50},   # WTI Oil
@@ -2031,20 +2031,31 @@ class TradingBot:
         # Get current time
         now = datetime.now()
         weekday = now.weekday()
-        
+
         # Forex market is closed on weekends
         if weekday >= 5:  # Saturday = 5, Sunday = 6
             return False
-        
-        # Check session time for the symbol
-        session = mt5.symbol_info_session(symbol, weekday)
-        
-        if session:
-            # Check if current time is within trading session
-            # This is a simplified check, you might need to adjust based on your broker
+
+        # Check if symbol is tradeable
+        symbol_info = mt5.symbol_info(symbol)
+        if symbol_info is None:
+            logger.warning(f"Symbol {symbol} not found")
+            return False
+
+        # Check if trading is allowed for this symbol
+        if not symbol_info.trade_mode == mt5.SYMBOL_TRADE_MODE_FULL:
+            return False
+
+        # Simple check: if we can get a tick, market is open
+        tick = mt5.symbol_info_tick(symbol)
+        if tick is None:
+            return False
+
+        # Check if bid and ask are valid (non-zero)
+        if tick.bid > 0 and tick.ask > 0:
             return True
-        
-        return True  # Default to open
+
+        return False
     
     def _show_account_status(self):
         """Display account status"""
@@ -2060,7 +2071,8 @@ class TradingBot:
         
         if positions:
             for pos in positions:
-                logger.info(f"  - {pos.symbol}: {pos.type_description()} {pos.volume} lots, P/L: ${pos.profit:.2f}")
+                position_type = "BUY" if pos.type == mt5.POSITION_TYPE_BUY else "SELL"
+                logger.info(f"  - {pos.symbol}: {position_type} {pos.volume} lots, P/L: ${pos.profit:.2f}")
         
         logger.info("=" * 50)
     
@@ -2177,13 +2189,13 @@ if __name__ == "__main__":
         # เลือก symbols ที่ต้องการเทรด (ตั้ง enabled: True/False)
         'symbols': {
             # Major Forex - เปิดใช้งาน
-            'EURUSDc': {'enabled': True, 'max_spread': 20},
+            'EURUSDc': {'enabled': True, 'max_spread': 20},  # EUR/USD - Broker symbol
             # 'GBPUSD': {'enabled': True, 'max_spread': 30},
             # 'USDJPY': {'enabled': True, 'max_spread': 20},
             # 'AUDUSD': {'enabled': True, 'max_spread': 25},
             
             # # Commodities - เปิดใช้งาน
-            'XAUUSDc': {'enabled': True, 'max_spread': 50},  # ทองคำ
+            'XAUUSDc': {'enabled': True, 'max_spread': 50},  # ทองคำ - Broker symbol
             # 'XAGUSD': {'enabled': True, 'max_spread': 50},  # เงิน
             # 'USOIL': {'enabled': True, 'max_spread': 50},   # น้ำมัน
             
